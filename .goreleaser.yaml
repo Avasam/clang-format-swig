@@ -1,0 +1,47 @@
+version: 2
+
+project_name: clang-format-swig
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    # "clang-format-swig_linux_amd64.tar.gz" matched by the Python and Node wrappers
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    # Binary only, no extra files in the archive
+    files:
+      - none*
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"

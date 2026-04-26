@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  gofmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      # To fix locally, run gofmt -s -w ./...
+      - run: gofmt -s -l -d ./...
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: Install clang-format
+        shell: bash
+        run: |
+          case "${{ runner.os }}" in
+            Linux)   sudo apt-get update && sudo apt-get install -y clang-format ;;
+            macOS)   brew install clang-format ;;
+            Windows) choco install --no-progress llvm ;;
+          esac
+          clang-format --version
+
+      - run: go vet -fix -diff ./...
+      - run: go test -v ./...
+
+  Ruff:
+    runs-on: ubuntu-latest
+    env:
+      RUFF_OUTPUT_FORMAT: github
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+        with:
+          activate-environment: true
+          working-directory: python
+      # Too simple for lockfile, not using --locked
+      - run: uv sync --only-group=ruff
+      - run: ruff check
+      - run: ruff format --check
+        # Check format even if the the previous step failed
+        if: ${{ !cancelled() }}
+
+  DotNetFormat:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dotnet
+    steps:
+      - uses: actions/checkout@v6
+      - run: dotnet format --no-restore --severity=info --verify-no-changes

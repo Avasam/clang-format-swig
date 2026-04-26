@@ -1,0 +1,3 @@
+- Initial deployment setup
+  - Test everything locally first
+  - What happens if one of the deployments fail? Can I retry without affecting all language distributions or re-bumping the tag?

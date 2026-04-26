@@ -1,0 +1,79 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <!--
+    SPDX-License-Identifier: MIT
+    Copyright 2026 Beslogic Inc.
+
+    The source skeleton for this configuration can be found at
+    https://github.com/BesLogic/shared-configs/blob/main/Directory.Build.props
+    Modifications to this file that are not project-specific should also be done upstream.
+    -->
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+
+        <!--
+        Create lock files. Allows faster restores and reproducibility
+        without having to pin to exact versions in csproj PackageReference.
+        -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <!-- Ensure we don't accidentally update or bypass the lock files (missing `locked-mode`) -->
+        <!-- lock files can still be regenerated with: dotnet restore -p:RestoreLockedMode=false -->
+        <RestoreLockedMode>true</RestoreLockedMode>
+
+        <!-- NuGet Security Audit https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages -->
+        <NuGetAudit>true</NuGetAudit>
+        <NuGetAuditLevel>moderate</NuGetAuditLevel>
+        <!--
+        Only fail on high + critical: https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages#warning-codes
+        Alternatively this can be made to only fail on CI:
+        https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages#running-nuget-audit-in-ci
+        -->
+        <WarningsAsErrors>$(WarningsAsErrors);NU1903;NU1904</WarningsAsErrors>
+        <!-- Will be default in .NET 10 -->
+        <NuGetAuditMode>all</NuGetAuditMode>
+    </PropertyGroup>
+
+    <!-- Properties specific to this project below -->
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <!-- Floor required by `File.SetUnixFileMode`. -->
+        <TargetFramework>net7.0</TargetFramework>
+        <!-- Too simple for lockfiles -->
+        <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+        <!-- Allow the installed tool to run on any newer major when .NET 7 isn't on the user's machine. -->
+        <RollForward>Major</RollForward>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <AssemblyName>clang-format-swig</AssemblyName>
+
+        <!-- dotnet tool packaging -->
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>clang-format-swig</ToolCommandName>
+
+        <!-- NuGet metadata -->
+        <PackageId>clang-format-swig</PackageId>
+        <Description>
+            clang-format wrapper for SWIG .i files.
+            Preserves SWIG directives (`%` lines) while formatting all C/C++ content.
+        </Description>
+        <PackageTags>clang-format;swig;formatter;c++;code-style</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/Avasam/clang-format-swig</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Avasam/clang-format-swig</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Authors>Avasam</Authors>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../README.md" Pack="true" PackagePath="\" />
+        <None Include="../LICENSE" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <!-- Platform binaries downloaded by CI before dotnet pack -->
+    <ItemGroup>
+        <EmbeddedResource Include="native/**" Exclude="native/**/.gitkeep" />
+    </ItemGroup>
+
+</Project>

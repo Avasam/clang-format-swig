@@ -1,0 +1,6 @@
+- id: clang-format-swig
+  name: clang-format SWIG files
+  language: golang
+  entry: clang-format-swig
+  files: \.i$
+  pass_filenames: true

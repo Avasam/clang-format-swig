@@ -1,0 +1,27 @@
+# Go build outputs
+dist/
+clang-format-swig
+clang-format-swig.exe
+
+# Python
+__pycache__/
+*.egg-info/
+dist/
+build/
+.venv/
+# Too simple for lockfile
+uv.lock
+
+# Node
+node_modules/
+# Too simple for lockfile
+package-lock.json
+
+# .NET
+bin/
+obj/
+*.nupkg
+
+# OS
+.DS_Store
+Thumbs.db

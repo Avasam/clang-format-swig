@@ -1,0 +1,18 @@
+{
+  "name": "@clang-format-swig/win32-x64",
+  "description": "win32-x64 binary for clang-format-swig",
+  "license": "MIT",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Avasam/clang-format-swig.git"
+  },
+  "scripts": {
+    "prepublishOnly": "node ../../scripts/check-bundled.js"
+  }
+}

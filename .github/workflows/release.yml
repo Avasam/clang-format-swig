@@ -1,0 +1,198 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    needs: goreleaser
+    steps:
+      - uses: actions/checkout@v6
+
+      # TODO: Check if this is even needed on GitHub actions
+      # - uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: "8.0.x"
+
+      - name: Download all platform binaries
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          declare -A ASSETS=(
+            [linux_amd64]="clang-format-swig_linux_amd64.tar.gz"
+            [linux_arm64]="clang-format-swig_linux_arm64.tar.gz"
+            [darwin_amd64]="clang-format-swig_darwin_amd64.tar.gz"
+            [darwin_arm64]="clang-format-swig_darwin_arm64.tar.gz"
+            [windows_amd64]="clang-format-swig_windows_amd64.zip"
+            [windows_arm64]="clang-format-swig_windows_arm64.zip"
+          )
+          for dir in "${!ASSETS[@]}"; do
+            asset="${ASSETS[$dir]}"
+            mkdir -p "dotnet/native/$dir"
+            gh release download ${{ github.ref_name }} --pattern "$asset" --dir /tmp/bins
+            if [[ "$asset" == *.zip ]]; then
+              unzip -o "/tmp/bins/$asset" clang-format-swig.exe -d "dotnet/native/$dir/"
+            else
+              tar -xzf "/tmp/bins/$asset" -C "dotnet/native/$dir/" clang-format-swig
+            fi
+          done
+
+      - name: Pack
+        run: |
+          VERSION=${{ github.ref_name }}
+          dotnet pack dotnet/ -c Release -o nupkg -p:Version=${VERSION#v}
+
+      - name: Push to NuGet.org
+        run: |
+          dotnet nuget push nupkg/*.nupkg \
+            --api-key ${{ secrets.NUGET_API_KEY }}  \
+            --source          https://api.nuget.org/v3/index.json
+
+  publish-pypi:
+    runs-on: ubuntu-latest
+    needs: goreleaser
+    permissions:
+      id-token: write
+    strategy:
+      matrix:
+        include:
+          - asset: clang-format-swig_linux_amd64.tar.gz
+            platform_tag: linux-x86_64
+          - asset: clang-format-swig_linux_arm64.tar.gz
+            platform_tag: linux-arm64
+          - asset: clang-format-swig_darwin_amd64.tar.gz
+            platform_tag: darwin-x86_64
+          - asset: clang-format-swig_darwin_arm64.tar.gz
+            platform_tag: darwin-arm64
+          - asset: clang-format-swig_windows_amd64.zip
+            platform_tag: win-amd64
+          - asset: clang-format-swig_windows_arm64.zip
+            platform_tag: win-arm64
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # hatch-vcs reads the version from the tag, so we need full git history.
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Download binary
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WHEEL_PLATFORM_TAG: ${{ matrix.platform_tag }}
+        run: |
+          gh release download ${{ github.ref_name }} --pattern "${{ matrix.asset }}" --dir /tmp
+          BIN_DIR=python/src/clang_format_swig/_bin
+          mkdir -p "$BIN_DIR"
+
+          if [[ "${{ matrix.asset }}" == *.zip ]]; then
+            unzip -o "/tmp/${{ matrix.asset }}" -d "$BIN_DIR"
+          else
+            tar -xzf "/tmp/${{ matrix.asset }}" -C "$BIN_DIR"
+          fi
+
+          # Find binary regardless of .exe or not
+          BIN_PATH=$(find "$BIN_DIR" -maxdepth 1 -name "clang-format-swig*" -print -quit)
+          if [[ -z "$BIN_PATH" ]]; then
+            echo "Binary not found" >&2
+            ls -R "$BIN_DIR"
+            exit 1
+          fi
+
+          chmod +x "$BIN_PATH" || true
+
+      - name: Build wheel
+        run: uv build python/ --wheel
+
+      - name: Publish to PyPI
+        run: uv publish python/dist/* --trusted-publishing automatic
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    needs: goreleaser
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download all platform binaries
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          declare -A PACKAGES=(
+            [linux-x64]="clang-format-swig_linux_amd64.tar.gz"
+            [linux-arm64]="clang-format-swig_linux_arm64.tar.gz"
+            [darwin-x64]="clang-format-swig_darwin_amd64.tar.gz"
+            [darwin-arm64]="clang-format-swig_darwin_arm64.tar.gz"
+            [win32-x64]="clang-format-swig_windows_amd64.zip"
+          )
+          for pkg in "${!PACKAGES[@]}"; do
+            asset="${PACKAGES[$pkg]}"
+            gh release download ${{ github.ref_name }} --pattern "$asset" --dir /tmp
+            dest="node/packages/$pkg"
+            if [[ "$asset" == *.zip ]]; then
+              unzip -o "/tmp/$asset" clang-format-swig.exe -d "$dest/"
+            else
+              tar -xzf "/tmp/$asset" -C "$dest/" clang-format-swig
+            fi
+          done
+
+      - name: Publish platform packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION=${{ github.ref_name }}
+          VERSION=${VERSION#v}
+          for pkg in node/packages/*/; do
+            cp LICENSE "$pkg/LICENSE"
+            npm version "$VERSION" --no-git-tag-version --prefix "$pkg"
+            npm publish "$pkg" --provenance --access public
+          done
+
+      - name: Publish main package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cp README.md node/README.md
+          cp LICENSE node/LICENSE
+          VERSION=${{ github.ref_name }}
+          VERSION=${VERSION#v}
+          # Pin optionalDependencies to this exact version
+          npm version "$VERSION" --no-git-tag-version --prefix node
+          npm pkg set \
+            optionalDependencies.@clang-format-swig/linux-x64="$VERSION" \
+            optionalDependencies.@clang-format-swig/linux-arm64="$VERSION" \
+            optionalDependencies.@clang-format-swig/darwin-x64="$VERSION" \
+            optionalDependencies.@clang-format-swig/darwin-arm64="$VERSION" \
+            optionalDependencies.@clang-format-swig/win32-x64="$VERSION" \
+            --prefix node
+          npm publish node --provenance --access public

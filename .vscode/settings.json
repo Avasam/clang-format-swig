@@ -1,0 +1,235 @@
+// SPDX-License-Identifier: MIT
+// Copyright 2026 Beslogic Inc.
+//
+// The source skeleton for this configuration can be found at
+// https://github.com/BesLogic/shared-configs/blob/main/.vscode/settings.json
+// Modifications to this file that are not project-specific should also be done upstream.
+{
+  /*
+   * General
+   */
+  "files.associations": {
+    "*.json": "jsonc",
+    "package.json": "json",
+  },
+  "files.exclude": {
+    "**/build": true,
+  },
+  "search.exclude": {
+    "package-lock.json": true,
+    "*.lock": true,
+    "dist/": true,
+  },
+  "editor.rulers": [
+    80,
+    100
+  ],
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.comments.insertSpace": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    // Clearing unreachable code when doing a quick temporary change is annoying
+    "source.fixAll.ts": "never",
+    // "source.*Imports": https://github.com/microsoft/TypeScript/pull/50931#issuecomment-1416288712
+    // Let dedicated imports tool deal with it
+    "source.organizeImports": "never",
+    "source.sortImports": "never",
+    // IDEM, but also it's annoying to remove imports because of commented code while testing
+    "source.removeUnusedImports": "never",
+  },
+  /*
+   * Git
+   */
+  "[git-commit]": {
+    "editor.rulers": [
+      72
+    ],
+  },
+  "[diff]": {
+    "files.trimTrailingWhitespace": false,
+  },
+  "search.useParentIgnoreFiles": true,
+  "git.openRepositoryInParentFolders": "always",
+  // In case the dev never ran `git config --local blame.ignoreRevsFile .git-blame-ignore-revs`
+  "gitlens.advanced.blame.customArguments": [
+    "--ignore-revs-file",
+    ".git-blame-ignore-revs"
+  ],
+  // NOTE: due to a bug in VSCode, we have to specify editor.defaultFormatter individually to ensure
+  // it overrides user settings. Please upvote: https://github.com/microsoft/vscode/issues/168411
+  /*
+   * C-Sharp
+   */
+  "[csharp]": {
+    // TODO: Consider something like CSharpier for more complete formatting
+    "editor.defaultFormatter": "ms-dotnettools.csharp",
+  },
+  "dotnet.formatting.organizeImportsOnFormat": true,
+  /*
+   * Markdown
+   */
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false,
+    "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
+  },
+  /*
+   * JSON
+   */
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+  },
+  "json.schemas": [
+    {
+      // Not all .jsonc files have a pre-associated schema
+      "fileMatch": [
+        "*.jsonc"
+      ],
+      "schema": {
+        "allowTrailingCommas": true
+      },
+    }
+  ],
+  /*
+   * JS/TS
+   */
+  // "[javascript]": {
+  //   "editor.defaultFormatter": "dprint.dprint",
+  // },
+  // "[javascriptreact]": {
+  //   "editor.defaultFormatter": "dprint.dprint",
+  // },
+  // "[typescript]": {
+  //   "editor.defaultFormatter": "dprint.dprint",
+  // },
+  // "[typescriptreact]": {
+  //   "editor.defaultFormatter": "dprint.dprint",
+  // },
+  "typescript.tsdk": "node/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "js/ts.implicitProjectConfig.checkJs": true,
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+  ],
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto",
+    },
+  ],
+  "eslint.codeActionsOnSave.rules": [
+    // Clearing imports, unused vars and comments when doing a quick temporary change is annoying
+    "!unused-imports/no-unused-imports",
+    "!sonarjs/unused-import",
+    "!autofix/no-debugger",
+    "!autofix/no-unused-vars",
+    "!@eslint-community/eslint-comments/no-unused-disable",
+    "*",
+  ],
+  "eslint.rules.customizations": [
+    {
+      "rule": "*",
+      "severity": "downgrade",
+    },
+  ],
+  "jest.autoRun": "off",
+  /*
+   * Python
+   */
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.tabSize": 4,
+    "editor.rulers": [
+      72, // PEP8-17 docstrings
+      100, // Our formatting limit
+    ],
+  },
+  "mypy-type-checker.importStrategy": "fromEnvironment",
+  "python.terminal.activateEnvironment": true,
+  // python.analysis is Pylance (pyright) configurations
+  "python.analysis.fixAll": [
+    // Explicitly omiting "source.convertImportFormat", let Ruff handle it
+    // Explicitly omiting "source.unusedImports", can be annoying when commenting code for debugging
+  ],
+  "python.analysis.diagnosticMode": "workspace",
+  "ruff.importStrategy": "fromEnvironment",
+  "ruff.enable": true,
+  "ruff.fixAll": true,
+  "ruff.organizeImports": true,
+  // Use the Ruff extension instead
+  "isort.check": false,
+  "flake8.enabled": false,
+  /*
+   * TOML
+   */
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml",
+  },
+  "evenBetterToml.formatter.alignComments": false,
+  "evenBetterToml.formatter.alignEntries": false,
+  "evenBetterToml.formatter.allowedBlankLines": 1,
+  "evenBetterToml.formatter.arrayAutoCollapse": true,
+  "evenBetterToml.formatter.arrayAutoExpand": true,
+  "evenBetterToml.formatter.arrayTrailingComma": true,
+  "evenBetterToml.formatter.columnWidth": 80,
+  "evenBetterToml.formatter.compactArrays": true,
+  "evenBetterToml.formatter.compactEntries": false,
+  "evenBetterToml.formatter.compactInlineTables": false,
+  "evenBetterToml.formatter.indentEntries": false,
+  "evenBetterToml.formatter.indentTables": false,
+  "evenBetterToml.formatter.inlineTableExpand": false,
+  "evenBetterToml.formatter.reorderArrays": true,
+  "evenBetterToml.formatter.trailingNewline": true,
+  // We like keeping TOML keys in a certain non-alphabetical order that feels more natural
+  "evenBetterToml.formatter.reorderKeys": false,
+  /*
+   * YAML
+   */
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+  },
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-issue-config.json": ".github/ISSUE_TEMPLATE/config.yml",
+  },
+  /*
+   * XML
+   */
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml",
+  },
+  "xml.codeLens.enabled": true,
+  /*
+   * Powershell
+   */
+  "powershell.codeFormatting.pipelineIndentationStyle": "IncreaseIndentationForFirstPipeline",
+  "powershell.codeFormatting.autoCorrectAliases": true,
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.useConstantStrings": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
+  "powershell.codeFormatting.whitespaceBetweenParameters": true,
+  // Fixes a "unexpectedly closed" warning popup everytime this console is closed
+  "powershell.integratedConsole.startInBackground": true,
+  // Only start when openning a ps1 file
+  "powershell.integratedConsole.showOnStartup": false,
+}

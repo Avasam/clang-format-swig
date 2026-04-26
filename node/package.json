@@ -1,0 +1,25 @@
+{
+  "name": "clang-format-swig",
+  "description": "clang-format wrapper for SWIG .i files",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Avasam/clang-format-swig.git"
+  },
+  "bin": {
+    "clang-format-swig": "./run.js"
+  },
+  "// @clang-format-swig": "Version will be set during release",
+  "optionalDependencies": {
+    "@clang-format-swig/linux-x64": "0.0.0",
+    "@clang-format-swig/linux-arm64": "0.0.0",
+    "@clang-format-swig/darwin-x64": "0.0.0",
+    "@clang-format-swig/darwin-arm64": "0.0.0",
+    "@clang-format-swig/win32-x64": "0.0.0",
+    "@clang-format-swig/win32-arm64": "0.0.0"
+  },
+  "// engines": "Floor required by `??` (nullish coalescing) used in run.js.",
+  "engines": {
+    "node": ">=14"
+  }
+}

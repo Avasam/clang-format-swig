@@ -1,0 +1,63 @@
+[build-system]
+requires = [
+  "hatchling", # Must keep in sync with dependency-groups.dev
+  "hatch-vcs",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "clang-format-swig"
+# Resolved from the git tag at build time by hatch-vcs
+# (mirrors how goreleaser injects the Go binary's version via -ldflags)
+dynamic = ["version"]
+description = "clang-format wrapper for SWIG .i files"
+readme = "../README.md"
+license-files = ["../LICENSE"]
+license = "MIT"
+requires-python = ">=3.7" # Oldest Python 3 version supported by hatchling
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/Avasam/clang-format-swig"
+Repository = "https://github.com/Avasam/clang-format-swig"
+Issues = "https://github.com/Avasam/clang-format-swig/issues"
+
+[project.scripts]
+clang-format-swig = "clang_format_swig.__main__:main"
+
+[dependency-groups]
+ruff = [
+  "beslogic-ruff-config",
+  "ruff", # Version should come from beslogic-ruff-config and the lock file
+]
+dev = [
+  "beslogic-ruff-config",
+  "hatchling", # Must keep in sync with build-system.requires
+  { include-group = "ruff" },
+]
+
+[tool.uv.sources]
+# To update: uv lock --upgrade-package Beslogic-Ruff-Config
+beslogic-ruff-config = { git = "https://github.com/Beslogic/Beslogic-Ruff-Config" }
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/clang_format_swig"]
+# _bin/ is excluded from sdist but included in wheels via the build hook
+artifacts = ["src/clang_format_swig/_bin/*"]
+
+[tool.hatch.build.hooks.custom]
+path = "hatch_build.py"
+
+[tool.ruff]
+extend = ".venv/Beslogic-Ruff-Config/ruff.toml"
