@@ -7,6 +7,9 @@ on:
 
 jobs:
   goreleaser:
+    environment:
+      name: deployment
+      deployment: true # This job will be the one linked to deployment history
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -27,6 +30,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish-nuget:
+    environment:
+      name: deployment # Env used for NUGET_API_KEY
+      deployment: false
     runs-on: ubuntu-latest
     needs: goreleaser
     steps:
@@ -68,10 +74,13 @@ jobs:
       - name: Push to NuGet.org
         run: |
           dotnet nuget push nupkg/*.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }}  \
-            --source          https://api.nuget.org/v3/index.json
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json
 
   publish-pypi:
+    environment:
+      name: deployment # Env used for trusted publishing
+      deployment: false
     runs-on: ubuntu-latest
     needs: goreleaser
     permissions:
@@ -132,6 +141,9 @@ jobs:
         run: uv publish python/dist/* --trusted-publishing automatic
 
   publish-npm:
+    environment:
+      name: deployment # Env used for trusted publishing
+      deployment: false
     runs-on: ubuntu-latest
     needs: goreleaser
     permissions:
@@ -139,10 +151,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
           registry-url: "https://registry.npmjs.org"
+
+      # - name: Upgrade npm for trusted publishing
+      #   run: npm install -g npm@latest
 
       - name: Download all platform binaries
         env:
@@ -167,20 +182,16 @@ jobs:
           done
 
       - name: Publish platform packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=${{ github.ref_name }}
           VERSION=${VERSION#v}
           for pkg in node/packages/*/; do
             cp LICENSE "$pkg/LICENSE"
             npm version "$VERSION" --no-git-tag-version --prefix "$pkg"
-            npm publish "$pkg" --provenance --access public
+            npm publish "$pkg" --access public
           done
 
       - name: Publish main package
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           cp README.md node/README.md
           cp LICENSE node/LICENSE
@@ -195,4 +206,4 @@ jobs:
             optionalDependencies.@clang-format-swig/darwin-arm64="$VERSION" \
             optionalDependencies.@clang-format-swig/win32-x64="$VERSION" \
             --prefix node
-          npm publish node --provenance --access public
+          npm publish node --access public

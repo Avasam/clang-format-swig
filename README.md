@@ -65,7 +65,7 @@ Add to your `.pre-commit-config.yaml`:
 # Requires having clang-format pre-installed and available on PATH
 # Has go installation and build overhead
 - repo: https://github.com/Avasam/clang-format-swig
-  rev: v...
+  rev: vX.X.X
   hooks:
     - id: clang-format-swig
 ```
@@ -82,8 +82,8 @@ or
       entry: clang-format-swig
       files: \.i$
       additional_dependencies:
-        - clang-format-swig==...
-        - clang-format==...
+        - clang-format-swig==X.X.X
+        - clang-format==X.X.X
 ```
 
 ### Python
@@ -140,4 +140,4 @@ pre-commit run clang-format-swig --all-files
 
 ---
 
-*This project was initially scaffolded with Claude (Sonnet 4.6 and Opus 4.7). Every change is reviewed by a human before being merged.*
+*LLM / Coding Agent disclaimer: This project was initially scaffolded with Claude (Sonnet 4.6 and Opus 4.7). Every change is reviewed by a human before being merged.*

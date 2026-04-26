@@ -14,7 +14,7 @@ jobs:
         with:
           go-version-file: go.mod
       # To fix locally, run gofmt -s -w ./...
-      - run: gofmt -s -l -d ./...
+      - run: gofmt -s -l -d .
 
   test:
     strategy:
@@ -39,7 +39,7 @@ jobs:
           esac
           clang-format --version
 
-      - run: go vet -fix -diff ./...
+      - run: go vet ./...
       - run: go test -v ./...
 
   Ruff:
@@ -55,8 +55,10 @@ jobs:
         with:
           activate-environment: true
           working-directory: python
+      # hatch-vcs needs git tags to resolve the version; CI checkout has none, so stub it out.
+      - run: sed -i 's/^dynamic = \["version"\]$/version = "0.0.0"/' pyproject.toml
       # Too simple for lockfile, not using --locked
-      - run: uv sync --only-group=ruff
+      - run: uv sync --no-install-project --no-editable --only-group=ruff
       - run: ruff check
       - run: ruff format --check
         # Check format even if the the previous step failed

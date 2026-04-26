@@ -21,6 +21,7 @@ package-lock.json
 bin/
 obj/
 *.nupkg
+*.sln
 
 # OS
 .DS_Store

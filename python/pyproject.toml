@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-  "hatchling", # Must keep in sync with dependency-groups.dev
   "hatch-vcs",
+  "hatchling", # Must keep in sync with dependency-groups.dev
 ]
 build-backend = "hatchling.build"
 
