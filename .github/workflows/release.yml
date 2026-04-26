@@ -112,7 +112,6 @@ jobs:
       - name: Download binary
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WHEEL_PLATFORM_TAG: ${{ matrix.platform_tag }}
         run: |
           gh release download ${{ github.ref_name }} --pattern "${{ matrix.asset }}" --dir /tmp
           BIN_DIR=python/src/clang_format_swig/_bin
@@ -135,6 +134,8 @@ jobs:
           chmod +x "$BIN_PATH" || true
 
       - name: Build wheel
+        env:
+          WHEEL_PLATFORM_TAG: ${{ matrix.platform_tag }}
         run: uv build python/ --wheel
 
       - name: Publish to PyPI
