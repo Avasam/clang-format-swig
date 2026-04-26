@@ -72,7 +72,7 @@ The git tag is the single source of truth for the version number. Every distribu
 
 ```sh
 git tag vX.X.X
-git push origin vX.X.X
+git push origin --tags
 ```
 
 This triggers [`release.yml`](.github/workflows/release.yml), which:
