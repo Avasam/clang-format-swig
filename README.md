@@ -55,7 +55,7 @@ If there's no distribution available for your platform architecture, you can [op
 go install github.com/Avasam/clang-format-swig@latest
 ```
 
-Requires Go (see [`go.mod`](go.mod) for the minimum version).
+Requires Go (see [`go.mod`](https://github.com/Avasam/clang-format-swig/tree/main/go.mod) for the minimum version).
 
 ### pre-commit
 
@@ -108,7 +108,7 @@ The platform binary is fetched as an [optional dependency](https://docs.npmjs.co
 dotnet tool install -g clang-format-swig
 ```
 
-See [`clang-format-swig.csproj`](dotnet/clang-format-swig.csproj) for the minimum .NET runtime. The platform binary is embedded in the package and extracted to your user cache on first run.
+See `TargetFramework` in [`clang-format-swig.csproj`](https://github.com/Avasam/clang-format-swig/tree/main/dotnet/clang-format-swig.csproj) for the minimum .NET runtime. The platform binary is embedded in the package and extracted to your user cache on first run.
 
 ## Usage
 
