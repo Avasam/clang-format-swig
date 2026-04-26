@@ -4,10 +4,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Avasam/clang-format-swig.git"
+    "url": "git+https://github.com/Avasam/clang-format-swig.git"
   },
   "bin": {
-    "clang-format-swig": "./run.js"
+    "clang-format-swig": "run.js"
   },
   "// @clang-format-swig": "Version will be set during release",
   "optionalDependencies": {

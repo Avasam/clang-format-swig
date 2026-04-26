@@ -1,4 +1,4 @@
-using System.Reflection;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 var version = typeof(Program).Assembly.GetName().Version?.ToString(3) ?? "dev";
