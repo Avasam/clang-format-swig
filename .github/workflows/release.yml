@@ -135,11 +135,6 @@ jobs:
           chmod +x "$BIN_PATH" || true
 
       - name: Build wheel
-        env:
-          # uv build's isolated env can't see .git, so hatch-vcs can't resolve the version.
-          # The trigger tag is the source of truth — feed it directly
-          # (the leading "v" is normalized away by packaging.Version).
-          SETUPTOOLS_SCM_PRETEND_VERSION_FOR_CLANG_FORMAT_SWIG: ${{ github.ref_name }}
         run: uv build python/ --wheel
 
       - name: Publish to PyPI

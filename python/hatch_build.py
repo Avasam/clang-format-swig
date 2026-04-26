@@ -13,6 +13,8 @@ class CustomBuildHook(BuildHookInterface):
     def initialize(self, version: str, build_data: dict[str, Any]) -> None:
         bin_dir = Path(self.root) / "src" / "clang_format_swig" / "_bin"
         if not any(bin_dir.glob("clang-format-swig*")):
+            return
+            # Somehow this prevents uv sync even with `--no-install-project --no-editable`
             raise RuntimeError(
                 "sdist not supported, "
                 + "clang-format-swig executable must be prebuilt and found under _bin"

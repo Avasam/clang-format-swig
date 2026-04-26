@@ -51,6 +51,9 @@ beslogic-ruff-config = { git = "https://github.com/Beslogic/Beslogic-Ruff-Config
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.version.raw-options]
+search_parent_directories = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/clang_format_swig"]
 # _bin/ is excluded from sdist but included in wheels via the build hook
