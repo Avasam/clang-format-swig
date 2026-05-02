@@ -115,24 +115,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download ${{ github.ref_name }} --pattern "${{ matrix.asset }}" --dir /tmp
-          BIN_DIR=python/src/clang_format_swig/_bin
+          BIN_DIR=python/src/clang_format_swig/_bin/
           mkdir -p "$BIN_DIR"
 
           if [[ "${{ matrix.asset }}" == *.zip ]]; then
-            unzip -o "/tmp/${{ matrix.asset }}" -d "$BIN_DIR"
+            unzip -o "/tmp/${{ matrix.asset }}" clang-format-swig.exe -d "$BIN_DIR"
           else
-            tar -xzf "/tmp/${{ matrix.asset }}" -C "$BIN_DIR"
+            tar -xzf "/tmp/${{ matrix.asset }}" -C "$BIN_DIR" clang-format-swig
           fi
-
-          # Find binary regardless of .exe or not
-          BIN_PATH=$(find "$BIN_DIR" -maxdepth 1 -name "clang-format-swig*" -print -quit)
-          if [[ -z "$BIN_PATH" ]]; then
-            echo "Binary not found" >&2
-            ls -R "$BIN_DIR"
-            exit 1
-          fi
-
-          chmod +x "$BIN_PATH" || true
 
       - name: Build wheel
         env:
@@ -175,11 +165,10 @@ jobs:
           for pkg in "${!PACKAGES[@]}"; do
             asset="${PACKAGES[$pkg]}"
             gh release download ${{ github.ref_name }} --pattern "$asset" --dir /tmp
-            dest="node/packages/$pkg"
             if [[ "$asset" == *.zip ]]; then
-              unzip -o "/tmp/$asset" clang-format-swig.exe -d "$dest/"
+              unzip -o "/tmp/$asset" clang-format-swig.exe -d "node/packages/$pkg/"
             else
-              tar -xzf "/tmp/$asset" -C "$dest/" clang-format-swig
+              tar -xzf "/tmp/$asset" -C "node/packages/$pkg/" clang-format-swig
             fi
           done
 
