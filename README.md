@@ -140,4 +140,4 @@ pre-commit run clang-format-swig --all-files
 
 ---
 
-*LLM / Coding Agent disclaimer: This project was initially scaffolded with Claude (Sonnet 4.6 and Opus 4.7). Every change is reviewed by a human before being merged.*
+*LLM / Coding Agent disclaimer: This project was initially scaffolded with Claude (Sonnet 4.6 and Opus 4.7) from a Python proof of concept script. The initial project layout and Go script were machine-generated. Every change is reviewed by a human before being merged.*

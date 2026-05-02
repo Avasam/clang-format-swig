@@ -89,17 +89,17 @@ jobs:
       matrix:
         include:
           - asset: clang-format-swig_linux_amd64.tar.gz
-            platform_tag: linux-x86_64
+            wheel_platform_tag: manylinux2014_x86_64
           - asset: clang-format-swig_linux_arm64.tar.gz
-            platform_tag: linux-arm64
+            wheel_platform_tag: manylinux2014_aarch64
           - asset: clang-format-swig_darwin_amd64.tar.gz
-            platform_tag: darwin-x86_64
+            wheel_platform_tag: macosx_10_9_x86_64
           - asset: clang-format-swig_darwin_arm64.tar.gz
-            platform_tag: darwin-arm64
+            wheel_platform_tag: macosx_11_0_arm64
           - asset: clang-format-swig_windows_amd64.zip
-            platform_tag: win-amd64
+            wheel_platform_tag: win_amd64
           - asset: clang-format-swig_windows_arm64.zip
-            platform_tag: win-arm64
+            wheel_platform_tag: win_arm64
 
     steps:
       - uses: actions/checkout@v6
@@ -135,7 +135,7 @@ jobs:
 
       - name: Build wheel
         env:
-          WHEEL_PLATFORM_TAG: ${{ matrix.platform_tag }}
+          WHEEL_PLATFORM_TAG: ${{ matrix.wheel_platform_tag }}
         run: uv build python/ --wheel
 
       - name: Publish to PyPI
