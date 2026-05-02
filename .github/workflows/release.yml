@@ -86,12 +86,13 @@ jobs:
     permissions:
       id-token: write
     strategy:
+      fail-fast: false
       matrix:
         include:
           - asset: clang-format-swig_linux_amd64.tar.gz
-            wheel_platform_tag: manylinux2014_x86_64
+            wheel_platform_tag: manylinux_2_17_x86_64
           - asset: clang-format-swig_linux_arm64.tar.gz
-            wheel_platform_tag: manylinux2014_aarch64
+            wheel_platform_tag: manylinux_2_17_aarch64
           - asset: clang-format-swig_darwin_amd64.tar.gz
             wheel_platform_tag: macosx_10_9_x86_64
           - asset: clang-format-swig_darwin_arm64.tar.gz
@@ -169,6 +170,7 @@ jobs:
             [darwin-x64]="clang-format-swig_darwin_amd64.tar.gz"
             [darwin-arm64]="clang-format-swig_darwin_arm64.tar.gz"
             [win32-x64]="clang-format-swig_windows_amd64.zip"
+            [win32-arm64]="clang-format-swig_windows_arm64.zip"
           )
           for pkg in "${!PACKAGES[@]}"; do
             asset="${PACKAGES[$pkg]}"
