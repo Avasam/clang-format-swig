@@ -12,7 +12,7 @@ name = "clang-format-swig"
 dynamic = ["version"]
 description = "clang-format wrapper for SWIG .i files"
 readme = "../README.md"
-license-files = ["../LICENSE"]
+license-files = ["LICENSE"]
 license = "MIT"
 requires-python = ">=3.7" # Oldest Python 3 version supported by hatchling
 classifiers = [
